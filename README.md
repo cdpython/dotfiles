@@ -5,7 +5,7 @@ simple terminal environment setting files for linux(ubuntu) users.
 ## Quick Start
 
 ```bash
-$ git clone https://gitlab.cdpython.com/cdpython/dotfiles ~/.dotfiles
+$ git clone https://github.com/cdpython/dotfiles ~/.dotfiles
 $ cd ~/.dotfiles
 $ ./setup.sh
 ```

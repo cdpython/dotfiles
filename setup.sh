@@ -36,8 +36,10 @@ if [ "$(uname)" == "Darwin" ]; then
 elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
 
     echo "[+] apt update & upgrade"
-    sudo apt install update 
-    sudo apt install upgrade -yq
+    sudo apt-get install software-properties-common
+    sudo add-apt-repository ppa:neovim-ppa/stable
+    sudo apt update 
+    sudo apt upgrade -yq
     sudo apt remove vim -y
     sudo apt install tmux neovim zsh python-minimal wget xclip curl python3-pip python-pip httpie coderay build-essential cmake ctags -y
 
@@ -134,6 +136,7 @@ rm -rf ~/.config/nvim
 rm -rf ~/.vimrc
 
 ln -s ~/.dotfiles/vim ~/.vim
+ln -s ~/.vim/vimrc ~/.vimrc
 ln -s ~/.dotfiles/vim ~/.config/nvim
 # tmux setting
 echo "[+] tmux.conf link"
