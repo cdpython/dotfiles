@@ -1,0 +1,118 @@
+# .zshrc
+# Modified by cdpython
+# Original Maintained by Claud D. Park <posquit0.bj@gmail.com>
+# http://www.posquit0.com/
+
+DISABLE_UPDATE_PROMPT=true
+export TERM="xterm-256color"
+
+# OSX python
+[ -f /usr/local/opt/python/libexec/bin/python ] && export PATH="/usr/local/opt/python/libexec/bin:$PATH"
+
+# Set the path of zsh configuration directory
+export ZSH_HOME=$HOME/.dotfiles/zshrc
+export ZSH=$ZSH_HOME/oh-my-zsh
+export ZSH_CUSTOM=$ZSH_HOME/oh-my-zsh-custom
+
+# ZSH_THEME="agnoster"
+ZSH_THEME="bullet-train"
+
+plugins=(
+	git
+	zsh-syntax-highlighting zsh-autosuggestions
+  pip python pylint pep8 virtualenv virtualenvwrapper
+)
+source $ZSH/oh-my-zsh.sh
+
+
+# Load a general configuration of zsh
+[ -f $ZSH_HOME/general.zshrc ] && source $ZSH_HOME/general.zshrc
+
+### User Configuration {{{
+  # Ruby
+  # eval "$(rbenv init -)"
+  # Node.JS
+  export NVM_DIR="$HOME/.nvm"
+  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+  # alias loadnvm='[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"'
+  # Fzf(Fuzzy Finder)
+  # Usage: Ctrl+T, Ctrl+R, Alt+C
+  if [ -f ~/.fzf.zsh  ]; then
+    source ~/.fzf.zsh
+  fi
+
+  # golang
+  export PATH=$PATH:/usr/local/go/bin
+  export GOPATH=$HOME/go
+  export PATH=$PATH:$GOPATH/bin
+
+  # rust lang
+  export PATH=$PATH:$HOME/.cargo/bin
+  export RUST_SRC_PATH="$(rustc --print sysroot)/lib/rustlib/src/rust/src"
+
+  # python
+  export PATH=$PATH:$HOME/.local/bin
+  export WORKON_HOME=$HOME/.virtualenvs
+  source /usr/local/bin/virtualenvwrapper.sh
+  # tmux resize
+  alias resize="tmux detach -a"
+  # clipcopy & clippaste
+  alias clc=clipcopy
+  alias clp=clippaste
+  # jump to home
+  alias j="cd ~"
+
+### }}}
+
+# Load a custom configuration of zsh
+[ -f $HOME/.zshrc.custom ] && source $HOME/.zshrc.custom
+
+# fzf settings
+export FZF_DEFAULT_COMMAND='~/.cargo/bin/fd --type file --follow --hidden --exclude .git --exclude node_modules'
+export FZF_ALT_C_COMMAND="~/.cargo/bin/fd --type directory --follow --hidden --exclude .git --exclude node_modules"
+export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+
+
+fv(){
+  local file
+
+  file="$(rg --follow --hidden -l -g '!.git/*' -g'!node_modules/' -g '!.npm' $@ 2>/dev/null | fzf --preview 'coderay {} ||cat {}')"
+  if [[ -n $file ]]
+  then
+     vim -- $file
+     print -l $file[1]
+  fi
+}
+
+fe() {
+  local files
+
+  files=(${(f)"$(~/.cargo/bin/fd --type file --follow --hidden --exclude .git --exclude node_modules $@ | fzf --preview 'coderay {} ||cat {}')"})
+
+  if [[ -n $files ]]
+  then
+      vim -- $files
+      print -l $files[1]
+  fi
+}
+
+tm() {
+  [[ -n "$TMUX" ]] && change="switch-client" || change="attach-session"
+  if [ $1 ]; then
+    tmux $change -t "$1" 2>/dev/null || (tmux new-session -d -s $1 && tmux $change -t "$1"); return
+  fi
+  session=$(tmux list-sessions -F "#{session_name}" 2>/dev/null | fzf --exit-0) &&  tmux $change -t "$session" || echo "No sessions found."
+}
+
+fk() {
+  local pid
+  pid=$(ps -ef | sed 1d | fzf -m | awk '{print $2}')
+
+  if [ "x$pid" != "x" ]
+  then
+    echo $pid | xargs kill -${1:-9}
+  fi
+}
+
+# OSX nvim set to default text editor
+[ -f /usr/local/bin/nvim ] && alias vim="nvim" && alias vi="nvim" && alias vimdiff="nvim -d"
