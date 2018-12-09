@@ -64,23 +64,6 @@ elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
         sudo chmod +x /usr/local/bin/docker-compose
     fi
 
-    # golang(no more default setting)
-    #file="/usr/local/go/bin/go"
-    #if [ -f "$file" ] 
-    #then
-    #    echo "$file already installed."
-    #else
-    #    echo "[+] golang install"
-    #    wget https://dl.google.com/go/go1.9.2.linux-amd64.tar.gz -O /tmp/go1.9.2.linux-amd64.tar.gz
-    #    sudo tar -C /usr/local -xzf /tmp/go1.9.2.linux-amd64.tar.gz
-    #fi
-
-    #if [ -d "$HOME/go" ]; 
-    #then
-    #    echo "GOPATH already installed."
-    #else
-    #    mkdir $HOME/go
-    #fi
 
     # pip
     echo "[+] upgrade pip"
@@ -104,17 +87,14 @@ git clone git://github.com/zsh-users/zsh-syntax-highlighting.git ~/.dotfiles/zsh
 echo "[+] install font"
 fonts/install.sh
 
-# virtualenv, aws-cli
-echo "[+] virtual env, aws install"
+# aws-cli
+echo "[+] aws install"
 if [ "$(uname)" != "Darwin" ]; then
-    sudo pip install virtualenv virtualenvwrapper 
-    sudo pip install neovim
-    sudo pip3 install neovim
     pip install awscli --upgrade --user
 
 else
-    pip2 install virtualenv virtualenvwrapper neovim awscli
-    pip3 install virtualenv virtualenvwrapper neovim awscli
+    pip2 install neovim awscli
+    pip3 install neovim awscli
 fi
 
 #fzf
