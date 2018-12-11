@@ -13,6 +13,9 @@ export ZSH_HOME=$HOME/.dotfiles/zshrc
 export ZSH=$ZSH_HOME/oh-my-zsh
 export ZSH_CUSTOM=$ZSH_HOME/oh-my-zsh-custom
 
+# fix zsh paste too slow
+export ZSH_HIGHLIGHT_MAXLENGTH=60
+
 # ZSH_THEME="agnoster"
 ZSH_THEME="bullet-train"
 
