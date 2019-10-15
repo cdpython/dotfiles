@@ -1,6 +1,7 @@
 # .zshrc
 # Modified by cdpython
 # Original Maintained by Claud D. Park <posquit0.bj@gmail.com>
+# http://www.posquit0.com/
 
 DISABLE_UPDATE_PROMPT=true
 export TERM="xterm-256color"
@@ -13,30 +14,38 @@ export ZSH_HOME=$HOME/.dotfiles/zshrc
 export ZSH=$ZSH_HOME/oh-my-zsh
 export ZSH_CUSTOM=$ZSH_HOME/oh-my-zsh-custom
 
-# fix zsh paste too slow
-export ZSH_HIGHLIGHT_MAXLENGTH=60
-
 # ZSH_THEME="agnoster"
 ZSH_THEME="bullet-train"
+
+# ZSH load check
+zmodload zsh/zprof
 
 plugins=(
 	git
 	zsh-syntax-highlighting zsh-autosuggestions
-  pip python pylint pep8
+  pip python pylint pep8 virtualenv virtualenvwrapper
 )
 source $ZSH/oh-my-zsh.sh
 
-
 # Load a general configuration of zsh
 [ -f $ZSH_HOME/general.zshrc ] && source $ZSH_HOME/general.zshrc
+
+# caching per day
+autoload -Uz compinit
+if [[ -n ~/.zcompdump(#qN.mh+24) ]]; then
+  compinit
+  touch .zcompdump
+else
+  compinit -C
+fi
 
 ### User Configuration {{{
   # Ruby
   # eval "$(rbenv init -)"
   # Node.JS
   export NVM_DIR="$HOME/.nvm"
-  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-  # alias loadnvm='[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"'
+  # [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+  alias loadnvm='[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"'
   # Fzf(Fuzzy Finder)
   # Usage: Ctrl+T, Ctrl+R, Alt+C
   if [ -f ~/.fzf.zsh  ]; then
@@ -54,6 +63,9 @@ source $ZSH/oh-my-zsh.sh
 
   # python
   export PATH=$PATH:$HOME/.local/bin
+  export WORKON_HOME=$HOME/.virtualenvs
+  # source /usr/local/bin/virtualenvwrapper.sh
+
   # tmux resize
   alias resize="tmux detach -a"
   # clipcopy & clippaste
@@ -66,6 +78,19 @@ source $ZSH/oh-my-zsh.sh
 
 # Load a custom configuration of zsh
 [ -f $HOME/.zshrc.custom ] && source $HOME/.zshrc.custom
+
+# fix to slow paste
+pasteinit() {
+  OLD_SELF_INSERT=${${(s.:.)widgets[self-insert]}[2,3]}
+  zle -N self-insert url-quote-magic # I wonder if you'd need `.url-quote-magic`?
+}
+
+pastefinish() {
+  zle -N self-insert $OLD_SELF_INSERT
+}
+zstyle :bracketed-paste-magic paste-init pasteinit
+zstyle :bracketed-paste-magic paste-finish pastefinish
+
 
 # fzf settings
 export FZF_DEFAULT_COMMAND='~/.cargo/bin/fd --type file --follow --hidden --exclude .git --exclude node_modules'
@@ -91,7 +116,7 @@ fe() {
 
   if [[ -n $files ]]
   then
-      vim -- $files
+      nvim -- $files
       print -l $files[1]
   fi
 }
@@ -116,3 +141,9 @@ fk() {
 
 # OSX nvim set to default text editor
 [ -f /usr/local/bin/nvim ] && alias vim="nvim" && alias vi="nvim" && alias vimdiff="nvim -d"
+
+# OSX Command with arrow keys
+bindkey "[D" backward-word
+bindkey "[C" forward-word
+bindkey "^[a" beginning-of-line
+bindkey "^[e" end-of-line
