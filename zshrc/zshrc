@@ -145,5 +145,6 @@ fk() {
 # OSX Command with arrow keys
 bindkey "[D" backward-word
 bindkey "[C" forward-word
-bindkey "^[a" beginning-of-line
-bindkey "^[e" end-of-line
+bindkey "^[[H" beginning-of-line
+bindkey "^[[F" end-of-line
+
