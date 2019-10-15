@@ -33,6 +33,14 @@ nnoremap <silent> <Leader>/ :nohlsearch<CR>
 nnoremap <C-k><C-k> :<C-u>execute 'move -1-'. v:count1<CR>
 nnoremap <C-j><C-j> :<C-u>execute 'move +'. v:count1<CR>
 
+" Fix home/end key in all modes
+map  <C-a> <Home>
+imap <C-a> <Home>
+vmap <C-a> <Home>
+map  <C-e> <End>
+imap <C-e> <End>
+vmap <C-E> <End>
+
 """ Hex Editor {{{
   " Map HexEditToggle to <F9>
   nnoremap <silent> <F9> :call HexEditToggle()<CR>
