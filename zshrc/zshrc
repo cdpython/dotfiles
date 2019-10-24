@@ -1,7 +1,8 @@
 # .zshrc
 # Modified by cdpython
-# Original Maintained by Claud D. Park <posquit0.bj@gmail.com>
-# http://www.posquit0.com/
+
+autoload -U promptinit; promptinit
+prompt pure
 
 DISABLE_UPDATE_PROMPT=true
 export TERM="xterm-256color"
@@ -12,10 +13,7 @@ export TERM="xterm-256color"
 # Set the path of zsh configuration directory
 export ZSH_HOME=$HOME/.dotfiles/zshrc
 export ZSH=$ZSH_HOME/oh-my-zsh
-export ZSH_CUSTOM=$ZSH_HOME/oh-my-zsh-custom
-
-# ZSH_THEME="agnoster"
-ZSH_THEME="bullet-train"
+# export ZSH_CUSTOM=$ZSH_HOME/oh-my-zsh-custom
 
 # ZSH load check
 zmodload zsh/zprof
@@ -23,8 +21,7 @@ zmodload zsh/zprof
 plugins=(
 	git
 	zsh-syntax-highlighting zsh-autosuggestions
-  pip python pylint pep8 virtualenv virtualenvwrapper
-)
+  pip python pylint pep8 )
 source $ZSH/oh-my-zsh.sh
 
 # Load a general configuration of zsh
@@ -73,9 +70,7 @@ fi
   alias clp=clippaste
   # jump to home
   alias j="cd ~"
-  # lazygit
-  alias lg="lazygit"
-
+  alias lg='lazygit'
 
 ### }}}
 

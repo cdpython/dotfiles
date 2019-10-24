@@ -21,6 +21,10 @@ if [ "$(uname)" == "Darwin" ]; then
     brew install httpie
     # go 
     brew install go
+    # lazygit
+    brew install lazygit
+    # bat
+    brew install bat
     mkdir -p $HOME/go
     # ruby
     brew install ruby
@@ -122,6 +126,7 @@ ln -s ~/.dotfiles/vim ~/.config/nvim
 echo "[+] tmux.conf link"
 rm -rf ~/.tmux.conf
 ln -s ~/.dotfiles/tmux/tmux.conf ~/.tmux.conf
+ln -s ~/.dotfiles/tmux/tmux.conf.local ~/.tmux.conf.local
 ~/.dotfiles/tmux/plugins/tpm/scripts/install_plugins.sh
 
 echo "[+] change shell"
@@ -136,6 +141,8 @@ echo "[+] nvm install"
 curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.8/install.sh | bash
 source ~/.nvm/nvm.sh
 nvm install --lts
+npm install --global pure-prompt
+
 
 # vim plugin
 vim +PlugInstall +qall now
