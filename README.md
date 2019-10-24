@@ -12,7 +12,7 @@ $ ./setup.sh
 
 ### Contents
 
-* tmux
+* tmux(https://github.com/gpakosz/.tmux)
 * zsh(oh-my-zsh)
 * nvm(node.js)
 * docker & docker-compose
