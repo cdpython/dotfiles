@@ -1,50 +1,543 @@
-" .vimrc
-"
-" Maintained by Claud D. Park <posquit0.bj@gmail.com>
-" http://www.posquit0.com/
+""" General {{{
+  set nocompatible
+  " Use path '~/.vim' even on non-unix machine
+  set runtimepath+=~/.vim
+  " Enhance command-line completion
+  set wildmenu
+  " Ignore when expanding wildcards
+  set wildignore=*.swp,*.swo,*.class
+  " Number of things to remember in history
+  set history=256
+  " Use the OS clipboard by default (on versions compiled with `+clipboard`)
+  set clipboard=unnamed
+  " Optimize for fast terminal connections
+  set ttyfast
+  " Walk directory tree upto $HOME looking for tags
+  set tags=./tags;$HOME
+  " Don’t add empty newlines at the end of files
+  " set binary
+  " set noendofline
+  " Add empty newlines at the end of files
+  set endofline
+  " Automatically change window's cwd to file's dir
+  set autochdir
+  " Set path to viminfo
+  if !has('nvim')
+    set viminfo='100,n$HOME/.viminfo
+  endif
+  " Set default shell to execute functions
+  set shell=sh
+  "" Modeline
+  " Respect modeline in files
+  set modeline
+  set modelines=4
+  "" Python
+  " Figure out the system Python for Neovim.
+  if exists("$VIRTUAL_ENV")
+    let g:python3_host_prog=substitute(system('which -a python3 | head -n2 | tail -n1'), '\n', '', 'g')
+  else
+    let g:python3_host_prog=substitute(system('which python3'), '\n', '', 'g')
+  endif
 
-let $VIM_HOME=$HOME.'/.vim'
+  " if hidden is not set, TextEdit might fail.
+  set hidden
 
-""" General Configuration
-if filereadable(expand('$VIM_HOME/general.vim'))
-  source $VIM_HOME/general.vim
+  " Some servers have issues with backup files, see #649
+  set nobackup
+  set nowritebackup
+
+  " Better display for messages
+  set cmdheight=2
+
+  " You will have bad experience for diagnostic messages when it's default 4000.
+  set updatetime=300
+
+  " don't give |ins-completion-menu| messages.
+  set shortmess+=c
+
+  " always show signcolumns
+  set signcolumn=yes
+
+  " Use tab for trigger completion with characters ahead and navigate.
+  " Use command ':verbose imap <tab>' to make sure tab is not mapped by other plugin.
+  inoremap <silent><expr> <TAB>
+        \ pumvisible() ? "\<C-n>" :
+        \ <SID>check_back_space() ? "\<TAB>" :
+        \ coc#refresh()
+  inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
+
+  function! s:check_back_space() abort
+    let col = col('.') - 1
+    return !col || getline('.')[col - 1]  =~# '\s'
+  endfunction
+
+  " Use <c-space> to trigger completion.
+  inoremap <silent><expr> <c-space> coc#refresh()
+
+  " Use <cr> to confirm completion, `<C-g>u` means break undo chain at current position.
+  " Coc only does snippet and additional edit on confirm.
+  inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
+  " Or use `complete_info` if your vim support it, like:
+  " inoremap <expr> <cr> complete_info()["selected"] != "-1" ? "\<C-y>" : "\<C-g>u\<CR>"
+
+  " Use `[g` and `]g` to navigate diagnostics
+  nmap <silent> [g <Plug>(coc-diagnostic-prev)
+  nmap <silent> ]g <Plug>(coc-diagnostic-next)
+
+  " Remap keys for gotos
+  nmap <silent> gd <Plug>(coc-definition)
+  nmap <silent> gy <Plug>(coc-type-definition)
+  nmap <silent> gi <Plug>(coc-implementation)
+  nmap <silent> gr <Plug>(coc-references)
+
+  " Use K to show documentation in preview window
+  nnoremap <silent> K :call <SID>show_documentation()<CR>
+
+  function! s:show_documentation()
+    if (index(['vim','help'], &filetype) >= 0)
+      execute 'h '.expand('<cword>')
+    else
+      call CocAction('doHover')
+    endif
+  endfunction
+
+  " Highlight symbol under cursor on CursorHold
+  autocmd CursorHold * silent call CocActionAsync('highlight')
+
+  " Remap for format selected region
+  xmap <leader>f  <Plug>(coc-format-selected)
+  nmap <leader>f  <Plug>(coc-format-selected)
+
+
+  """ Auto Commands {{{
+    if has('autocmd')
+      " Auto reload vimrc
+      " augroup reload_vimrc
+      "   autocmd!
+      "   autocmd BufWritePost $MYVIMRC,*.vim
+      "     \ source $MYVIMRC |
+      "     \ echo 'Reloaded VIM Configurations'
+      " augroup END
+      " Restore cursor position when opening file
+      augroup restore_cursor
+        autocmd!
+        autocmd BufReadPost *
+          \ if line("'\"") > 1 && line("'\"") <= line("$") |
+          \   exe "normal! g`\"" |
+          \ endif
+      augroup END
+    endif
+  """ }}}
+
+  """ Folding {{{
+    " Turn on folding
+    set foldenable
+    " Make folding indent sensitive
+    set foldmethod=indent
+    " Don't autofold anything
+    set foldlevel=99
+    " Don't open folds when search into them
+    set foldopen-=search
+    " Don't open folds when undo stuff
+    set foldopen-=undo
+  """ }}}
+
+  """ Backup & Swap {{{
+    " No fucking backup & swap files
+    set noswapfile
+    set nobackup
+    " Centralize backups, swapfiles and undo history
+    " set backupdir=~/.vim/backups
+    " set directory=~/.vim/swaps
+    " Maintain undo history between sessions
+    set undofile
+    " Set maximum number of changes that can be undone
+    set undolevels=100
+    " Change directory to save undo history
+    if has('persistent_undo') && !has('nvim')
+      set undodir=~/.vim/cache
+      if !isdirectory(&undodir)
+        " Create directory
+        call mkdir(&undodir, 'p')
+      endif
+    endif
+    " Don’t create backups when editing files in certain directories
+    set backupskip=/tmp/*
+  """ }}}
+
+  """ Encoding {{{
+    set encoding=utf-8
+    set fileencodings=utf-8
+  """ }}}
+
+  """ Formatting {{{
+    " Set the default tabstop
+    set tabstop=2
+    set softtabstop=2
+    " Set the default shift width for indents
+    set shiftwidth=2
+    " Make tabs into spaces (set by tabstop)
+    set expandtab
+    " Smarter tab levels
+    set smarttab
+    " Copy indent from current line when starting a new line
+    set autoindent
+    " Do smart autoindenting when starting a new line
+    set smartindent
+  """ }}}
+
+  """ Grep {{{
+    if executable('rg')
+      " Use rg(ripgrep)
+      set grepprg=rg\ --no-heading\ --vimgrep
+    elseif executable('pt')
+      " Use pt(The Platinum Searcher)
+      set grepprg=pt\ --nocolor\ --nogroup\ --column
+    elseif executable('ag')
+      " Use ag(The Silver Searcher)
+      set grepprg=ag\ --vimgrep
+    elseif executable('ack')
+      set grepprg=ack\ -H\ --nocolor\ --nogroup
+    endif
+    " Set foramt for vimgrep
+    set grepformat=%f:%l:%c:%m
+  """ }}}
+"}}}
+
+""" Key Mappings {{{
+  " Map <leader> key
+  let mapleader=","
+  let g:mapleader=","
+  " Allow cursor keys in insert mode
+  if !has('nvim')
+    set esckeys
+  endif
+  " Allow backspace in insert mode
+  set backspace=indent,eol,start
+  " Time to wait after ESC (default causes an annoying delay)
+  set timeoutlen=250
+  " Enable mouse in all modes
+  set mouse=a
+  " Hide the mouse cursor while typing
+  set mousehide
+
+  " <Esc> is too annoying to type
+  inoremap jkj <Esc>
+  " Screen sucks, redraw everything
+  nnoremap <Leader>r :redraw!<CR>
+  " Make Q meaningless (Q: Entering to Ex mode)
+  nnoremap Q <nop>
+  " Switching search-highlighting off until next search
+  nnoremap <silent> <Leader>/ :nohlsearch<CR>
+
+  " Quickly move current line above or below
+  nnoremap <C-k><C-k> :<C-u>execute 'move -1-'. v:count1<CR>
+  nnoremap <C-j><C-j> :<C-u>execute 'move +'. v:count1<CR>
+
+  " Fix home/end key in all modes
+  map  <C-a> <Home>
+  imap <C-a> <Home>
+  vmap <C-a> <Home>
+  map  <C-e> <End>
+  imap <C-e> <End>
+  vmap <C-E> <End>
+
+  """ Hex Editor {{{
+    " Map HexEditToggle to <F9>
+    nnoremap <silent> <F9> :call HexEditToggle()<CR>
+    let g:hexmode=0
+    function! HexEditToggle()
+      if g:hexmode
+        let g:hexmode=0
+        %!xxd -r
+      else
+        let g:hexmode=1
+        %!xxd
+      endif
+    endfunction
+  " }}}
+
+  """ Buffer {{{
+    " move to prev buffer
+    nmap <silent>fk :bprev<cr>
+    " move to next buffer
+    nmap <silent>fj :bnext<cr>
+    " show all buffers
+    nmap <silent>fa :ball<cr>
+    " delete current buffer
+    nmap <silent>fd :bdelete<cr>
+"}}}
+
+  """ Windows {{{
+    nnoremap <C-h> <C-w>h
+    nnoremap <C-j> <C-w>j
+    nnoremap <C-k> <C-w>k
+    nnoremap <C-l> <C-w>l
+  " }}}
+
+  """ Tabs {{{
+    nnoremap <silent> <Tab><Tab> :tabnew<CR>
+    nnoremap <silent> <Tab>q :tabclose<CR>
+    nnoremap <silent> <Tab>o :tabonly<CR>
+    nnoremap <silent> <Tab>s :tabs<CR>
+    nnoremap <silent> <Tab>^ :tabfirst<CR>
+    nnoremap <silent> <Tab>$ :tablast<CR>
+    nnoremap <silent> <Tab>k :tabfirst<CR>
+    nnoremap <silent> <Tab>j :tablast<CR>
+    nnoremap <silent> <Tab>l :tabnext<CR>
+    nnoremap <silent> <Tab>h :tabprevious<CR>
+    nnoremap <silent> <Tab>n :tabnext<CR>
+    nnoremap <silent> <Tab>p :tabprevious<CR>
+    nnoremap <silent> <Tab><Right> :tabnext<CR>
+    nnoremap <silent> <Tab><Left> :tabprevious<CR>
+    nnoremap <silent> <Tab>1 :tabnext 1<CR>
+    nnoremap <silent> <Tab>2 :tabnext 2<CR>
+    nnoremap <silent> <Tab>3 :tabnext 3<CR>
+    nnoremap <silent> <Tab>4 :tabnext 4<CR>
+    nnoremap <silent> <Tab>5 :tabnext 5<CR>
+    nnoremap <silent> <Tab>6 :tabnext 6<CR>
+    nnoremap <silent> <Tab>7 :tabnext 7<CR>
+    nnoremap <silent> <Tab>8 :tabnext 8<CR>
+    nnoremap <silent> <Tab>9 :tabnext 9<CR>
+  " }}}
+"}}}
+
+""" Plugins {{{
+  call plug#begin('~/.vim/plugged')
+
+  "" Plugin: Airline {{{
+    " Use statusline more effective
+    Plug 'vim-airline/vim-airline'
+    Plug 'vim-airline/vim-airline-themes'
+
+    let g:airline#extensions#tabline#enabled = 1
+    let g:airline#extensions#tabline#fnamemod = ':t'
+    let g:airline_powerline_fonts = 1
+  "" }}}
+
+  "" Plugin: Vim Startify {{{
+    " A fancy start screen for Vim
+    Plug 'mhinz/vim-startify'
+    " A list of files to bookmark
+    let g:startify_bookmarks=[
+    \ '~/.vim/vimrc',
+    \ '~/.vim/plugins.vim',
+    \]
+    " A list of Vim regular expressions that filters recently used files
+    let g:startify_skiplist=[
+    \ 'COMMIT_EDITMSG',
+    \ $VIMRUNTIME .'/doc',
+    \ 'plugged/.*/doc',
+    \ 'bundle/.*/doc',
+    \]
+  "" }}}
+
+  "" Plugin: Vim Surround {{{
+    " All about surroundings: parenthless, brackets, quotes, XML tags and more
+    Plug 'tpope/vim-surround'
+  "" }}}
+
+  "" Plugin: Vim Fugitive {{{
+    " The best Git wrapper
+    Plug 'tpope/vim-fugitive'
+    " Key mappings for convenience
+    nnoremap <Leader>gd :Gvdiff<CR>
+    nnoremap <Leader>gD :Gvdiff HEAD<CR>
+    nnoremap <Leader>gs :Gstatus<CR>:20wincmd +<CR>
+    nnoremap <Leader>gw :Gwrite<CR>
+    nnoremap <Leader>gb :Gblame -w<CR>:vertical resize 10<CR>
+    nnoremap <Leader>gci :Gcommit --verbose<CR>
+  "" }}}
+
+  "" Plugin: vim-gitgutter {{{
+    Plug 'airblade/vim-gitgutter'
+  "" }}}
+
+  "" Plugin: Fzf {{{
+    " Full path fuzzy file, buffer, mru, tag finder for Vim
+    " A general-purpose command-line fuzzy finder
+    Plug 'junegunn/fzf', { 'do': 'yes \| ./install --all --no-update-rc' }
+    Plug 'junegunn/fzf.vim'
+    nnoremap <silent> <C-f> :Files ~<CR>
+    nnoremap <silent> <C-l><C-l> :Lines<CR>
+  "" }}}
+
+  "" Plugin: Easymotion {{{
+    " Provides a much simpler way to use motions in Vim
+    Plug 'Lokaltog/vim-easymotion'
+    " <Leader>f{char} to move to {char}
+    map  <Leader>f <Plug>(easymotion-bd-f)
+    nmap <Leader>f <Plug>(easymotion-overwin-f)
+
+    " s{char}{char} to move to {char}{char}
+    nmap s <Plug>(easymotion-overwin-f2)
+
+    " Move to line
+    map <Leader>L <Plug>(easymotion-bd-jk)
+    nmap <Leader>L <Plug>(easymotion-overwin-line)
+
+    " Move to word
+    map  <Leader>w <Plug>(easymotion-bd-w)
+    nmap <Leader>w <Plug>(easymotion-overwin-w)
+  "" }}}
+
+  "" Plugin: Tagbar {{{
+    " Easy way to browse the tags
+    Plug 'majutsushi/tagbar'
+    " Map TagbarToggle to <F10>
+    nnoremap <silent> <F10> :TagbarToggle<CR>
+  "" }}}
+
+  "" Plugin: NERDTree {{{
+    " Explore filesystem with Vim
+    Plug 'scrooloose/nerdtree', { 'on': ['NERDTreeToggle', 'NERDTreeTabsToggle'] }
+    " Ignore some extensions
+    let NERDTreeIgnore=['.o$','.pyc$']
+    " Show hidden files
+    let NERDTreeShowHidden=1
+    " Automatically open NERDTree when vim start up with no files
+    " autocmd StdinReadPre * let s:std_in=1
+    " autocmd VimEnter * if argc() == 0 && !exists('s:std_in') | NERDTree | endif
+    " Close vim if the only window left open is a NERDTree
+    autocmd bufenter * if (winnr('$') == 1 && exists('b:NERDTree')
+    \ && b:NERDTree.isTabTree()) | q | endif
+  "" }}}
+
+  "" Plugin: NERDTree Git Plugin {{{
+    " A plugin of NERDTree showing git status flags
+    Plug 'Xuyuanp/nerdtree-git-plugin'
+    " Use this variable to change symbols
+    let g:NERDTreeIndicatorMapCustom = {
+    \ 'Modified'  : '*',
+    \ 'Staged'    : '✚',
+    \ 'Untracked' : '✭',
+    \ 'Renamed'   : '➜',
+    \ 'Unmerged'  : '═',
+    \ 'Deleted'   : '✖',
+    \ 'Dirty'     : '✗',
+    \ 'Clean'     : '✔︎',
+    \ 'Unknown'   : '?'
+    \ }
+  "" }}}
+
+  "" Plugin: NERDTree Tabs {{{
+    " NERDTree and tabs together in Vim
+    Plug 'jistr/vim-nerdtree-tabs', { 'on': 'NERDTreeTabsToggle' }
+    " Map NERDTreeToggle to <F11>
+    nnoremap <silent> <F11> :NERDTreeTabsToggle<CR>
+  "" }}}
+
+  "" Plugin: Gundo {{{
+    " Make browsing Vim's powerful undo tree less painful
+    Plug 'sjl/gundo.vim', { 'on': 'GundoToggle' }
+    " Map GundoToggle to <F12>
+    nnoremap <silent> <F12> :GundoToggle<CR>
+    " Set the horizontal width of Gundo graph
+    let g:gundo_width=40
+    " Force the preview window below current windows
+    let g:gundo_preview_bottom=1
+    " Set 1 to open the right side instead of the left
+    let g:gundo_right=0
+    " Disable Gundo entirely if machine not support python
+    if has('python3')
+      let g:gundo_prefer_python3 = 1
+    endif
+    " Rendering diff automatically with cursor move
+    let g:gundo_auto_preview=1
+  "" }}}
+
+  "" Plugin: Vim Multiple Cursors {{{
+    " Bringing Sublime Text's awesome multiple selection feature into Vim
+    Plug 'terryma/vim-multiple-cursors'
+    let g:multi_cursor_use_default_mapping=0
+
+    " Default mapping
+    let g:multi_cursor_start_word_key      = '<C-n>'
+    let g:multi_cursor_select_all_word_key = '<A-n>'
+    let g:multi_cursor_start_key           = 'g<C-n>'
+    let g:multi_cursor_select_all_key      = 'g<A-n>'
+    let g:multi_cursor_next_key            = '<C-n>'
+    let g:multi_cursor_prev_key            = '<C-p>'
+    let g:multi_cursor_skip_key            = '<C-x>'
+    let g:multi_cursor_quit_key            = '<Esc>'
+  "" }}}
+
+  "" Plugin: vim-code-dark {{{
+    Plug 'tomasiser/vim-code-dark'
+  "" }}}
+
+  "" Plugin: coc {{{
+    Plug 'neoclide/coc.nvim', {'tag': '*', 'do': './install.sh'}
+  "" }}}
+
+  " Initialize plugin system
+  call plug#end()
+" }}}
+
+
+" Enable syntax highlighting
+syntax on
+
+" Line numbers on
+set number
+" Enable relative number for line
+" (Constantly computing the relative nubmers is expensive)
+set relativenumber
+" Show ruler
+set ruler
+" Always show tab pannel
+set showtabline=2
+" Show the command typing
+set showcmd
+" Show matching brackets
+set showmatch
+" Bracket blinking
+set matchtime=5
+" Hide the current mode
+set noshowmode
+" Mark 80th column with a highlight color
+if exists('+colorcolumn')
+  set colorcolumn=80
+  highlight ColorColumn ctermbg=gray
 endif
-if filereadable(expand('$VIM_HOME/key-mapping.vim'))
-  source $VIM_HOME/key-mapping.vim
-endif
-if filereadable(expand('$VIM_HOME/visual.vim'))
-  source $VIM_HOME/visual.vim
-endif
-
-
-""" Plugin Configuration
-" All the vim plugins are managed by 'vim-plug'
-" List & configuration of plugins separated to several files 'plugins.*.vim'
-if filereadable(expand('$VIM_HOME/plugins.vim'))
-  source $VIM_HOME/plugins.vim
-endif
-
-""" Override Configuration (because of plugins.vim)
-"if filereadable(expand('$VIM_HOME/override.vim'))
-"  source $VIM_HOME/override.vim
-"endif
-
-""" GUI Specific Configuration
-if has('gui_running')
- if filereadable(expand('$VIM_HOME/gui.vim'))
-   source $VIM_HOME/gui.vim
- endif
-endif
-
-
-""" Theme Configuration
-if filereadable(expand('$VIM_HOME/theme.vim'))
-  source $VIM_HOME/theme.vim
+" Highlight current line
+set cursorline
+" Show cursorline for active window only
+augroup highlight_active_window
+  autocmd!
+  autocmd BufEnter * setlocal cursorline
+  autocmd BufLeave * setlocal nocursorline
+augroup END
+" No blinking
+set novisualbell
+" No noise
+set noerrorbells
+" Minimal number of screen lines to keep above and below the cursor
+set scrolloff=3
+" Native customized statusline, if airline is not available
+set statusline=%1*%{winnr()}\ %*%<\ %f\ %h%m%r%=%l,%c%V\ (%P)
+" Always show status line.
+set laststatus=2
+" No conceal
+set conceallevel=0
+" Use a block cursor in normal mode, i-beam cursor in insertmode
+if empty($TMUX)
+  let &t_SI = "\<Esc>]50;CursorShape=1\x7"
+  let &t_EI = "\<Esc>]50;CursorShape=0\x7"
+else
+  let &t_SI = "\<Esc>Ptmux;\<Esc>\<Esc>]50;CursorShape=1\x7\<Esc>\\"
+  let &t_EI = "\<Esc>Ptmux;\<Esc>\<Esc>]50;CursorShape=0\x7\<Esc>\\"
 endif
 
+""" Match and search {{{
+  " Highlight searches
+  set hlsearch
+  " Ignore case of searches
+  set ignorecase
+  " be sensitive when there's a capital letter
+  set smartcase
+  " Highlight dynamically as pattern is typed
+  set incsearch
+""" }}}
 
-""" Local Specific Configuration
-" Use local vimrc if available
-if filereadable(expand('$HOME/.vimrc.local'))
-  source $HOME/.vimrc.local
-endif
+colorscheme codedark

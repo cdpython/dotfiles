@@ -73,6 +73,9 @@ fi
   alias clp=clippaste
   # jump to home
   alias j="cd ~"
+  # lazygit
+  alias lg="lazygit"
+
 
 ### }}}
 
