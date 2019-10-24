@@ -13,6 +13,7 @@ $ ./setup.sh
 ### Contents
 
 * tmux(https://github.com/gpakosz/.tmux)
+* pure(https://github.com/sindresorhus/pure)
 * zsh(oh-my-zsh)
 * nvm(node.js)
 * docker & docker-compose
