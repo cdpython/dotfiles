@@ -141,8 +141,6 @@ echo "[+] nvm install"
 curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.8/install.sh | bash
 source ~/.nvm/nvm.sh
 nvm install --lts
-npm install --global pure-prompt
-
 
 # vim plugin
 vim +PlugInstall +qall now
@@ -152,6 +150,11 @@ echo "[+] rust install"
 curl https://sh.rustup.rs -sSf | sh
 echo "[+] fd & ripgrep install"
 ~/.cargo/bin/cargo install fd-find ripgrep
+
+#pure
+echo "[+] install pure for zsh"
+mkdir -p "$HOME/.zsh"
+git clone https://github.com/sindresorhus/pure.git "$HOME/.zsh/pure"
 
 # run zsh
 echo "[+] Finished!"
