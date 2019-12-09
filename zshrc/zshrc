@@ -1,6 +1,6 @@
 # .zshrc
 # Modified by cdpython
-
+fpath+=("$HOME/.zsh/pure")
 autoload -U promptinit; promptinit
 prompt pure
 
