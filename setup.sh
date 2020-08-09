@@ -42,7 +42,6 @@ elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
     wget -O - https://apt.llvm.org/llvm.sh | bash
     echo "[+] apt update & upgrade"
     sudo apt install software-properties-common
-    sudo add-apt-repository ppa:neovim-ppa/stable
     sudo apt update 
     sudo apt upgrade -yq
     sudo apt remove vim -y
