@@ -38,7 +38,7 @@ if [ "$(uname)" == "Darwin" ]; then
     gem install coderay
 
 elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
-    echo "[+] install llvm
+    echo "[+] install llvm"
     wget -O - https://apt.llvm.org/llvm.sh | bash
     echo "[+] apt update & upgrade"
     sudo apt install software-properties-common
