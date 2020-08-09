@@ -39,7 +39,7 @@ if [ "$(uname)" == "Darwin" ]; then
 
 elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
     echo "[+] install llvm
-    bash -c "$(wget -O - https://apt.llvm.org/llvm.sh)"
+    wget -O - https://apt.llvm.org/llvm.sh | bash
     echo "[+] apt update & upgrade"
     sudo apt install software-properties-common
     sudo add-apt-repository ppa:neovim-ppa/stable
