@@ -38,14 +38,15 @@ if [ "$(uname)" == "Darwin" ]; then
     gem install coderay
 
 elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
-
+    echo "[+] install llvm
+    bash -c "$(wget -O - https://apt.llvm.org/llvm.sh)"
     echo "[+] apt update & upgrade"
-    sudo apt-get install software-properties-common
+    sudo apt install software-properties-common
     sudo add-apt-repository ppa:neovim-ppa/stable
     sudo apt update 
     sudo apt upgrade -yq
     sudo apt remove vim -y
-    sudo apt install tmux neovim zsh python-minimal wget xclip curl python3-pip python-pip httpie coderay build-essential cmake ctags -y
+    sudo apt install tmux neovim zsh python2-minimal wget xclip curl python3-pip httpie coderay build-essential cmake ctags -y
 
     # get docker
     echo "[+] dcoker & docker-compose install"
